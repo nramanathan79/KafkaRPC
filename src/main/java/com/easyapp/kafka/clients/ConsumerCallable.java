@@ -1,4 +1,4 @@
-package com.easyapp.kafkarpc.clients;
+package com.easyapp.kafka.clients;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ public class ConsumerCallable<K, V> implements Callable<Long> {
 	private final Class<? extends ConsumerPartitionCallable<K, V>> consumerPartitionProcessorClass;
 	private final long pollingIntervalMillis;
 
-	public ConsumerCallable(Properties consumerProperties, final String topic,
+	public ConsumerCallable(final Properties consumerProperties,
 			final Class<? extends ConsumerPartitionCallable<K, V>> consumerPartitionProcessorClass,
 			final long pollingIntervalMillis) {
 		this.consumerProperties = consumerProperties;
-		this.topic = topic;
+		this.topic = consumerProperties.getProperty("topic");
 		this.consumerPartitionProcessorClass = consumerPartitionProcessorClass;
 		this.pollingIntervalMillis = pollingIntervalMillis;
 	}
@@ -45,7 +45,7 @@ public class ConsumerCallable<K, V> implements Callable<Long> {
 					long.class };
 
 			List<Future<Long>> threads = new ArrayList<>();
-
+			
 			partitions.forEach(partition -> {
 				try {
 					threads.add(executor.submit(consumerPartitionProcessorClass

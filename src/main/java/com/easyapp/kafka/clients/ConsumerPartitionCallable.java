@@ -1,4 +1,4 @@
-package com.easyapp.kafkarpc.clients;
+package com.easyapp.kafka.clients;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -13,49 +13,54 @@ public abstract class ConsumerPartitionCallable<K, V> implements Callable<Long> 
 	private final KafkaConsumer<K, V> consumer;
 	private final TopicPartition topicPartition;
 	private final long pollingIntervalMillis;
-	
-	public ConsumerPartitionCallable(final Properties consumerProperties, final TopicPartition topicPartition, final long pollingIntervalMillis) {
+
+	public ConsumerPartitionCallable(final Properties consumerProperties, final TopicPartition topicPartition,
+			final long pollingIntervalMillis) {
 		this.consumer = new KafkaConsumer<>(consumerProperties);
 		this.topicPartition = topicPartition;
 		this.pollingIntervalMillis = pollingIntervalMillis;
 	}
 
 	abstract void process(final ConsumerRecord<K, V> record);
-	
+
 	protected void commit() {
 		consumer.commitAsync();
 	}
-	
+
 	protected void close() {
 		consumer.close();
 	}
-	
+
 	@Override
 	public Long call() throws Exception {
 		long recordsProcessed = 0;
-		
+
 		try {
+			System.out.println(
+					"RAMBO 2: Topic = " + topicPartition.topic() + ", Partition = " + topicPartition.partition());
 			consumer.assign(Arrays.asList(topicPartition));
-			
+
 			while (!Thread.currentThread().isInterrupted()) {
 				// Listen on the stream an get records.
 				ConsumerRecords<K, V> records = consumer.poll(pollingIntervalMillis);
-				
-				// process each record.
-				records.forEach(record -> process(record));
-				
-				// Commit each batch. Default is Async. Override to change commit option.
-				commit();
-				
-				// Keep count of the records processed.
-				recordsProcessed += records.count();
+
+				if (records != null && !records.isEmpty()) {
+					// process each record.
+					records.forEach(record -> process(record));
+
+					// Commit each batch. Default is Async. Override to change
+					// commit option.
+					commit();
+
+					// Keep count of the records processed.
+					recordsProcessed += records.count();
+				}
 			}
-		}
-		finally {
+		} finally {
 			// Close the consumer.
 			close();
 		}
-		
+
 		return recordsProcessed;
 	}
 }

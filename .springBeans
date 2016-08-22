@@ -7,7 +7,7 @@
 	</configSuffixes>
 	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
-		<config>java:com.easyapp.kafkarpc.KafkaRPCApplication</config>
+		<config>java:com.easyapp.kafka.KafkaRPCApplication</config>
 	</configs>
 	<autoconfigs>
 	</autoconfigs>

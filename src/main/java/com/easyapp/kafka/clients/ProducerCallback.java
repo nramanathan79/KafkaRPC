@@ -1,9 +1,9 @@
-package com.easyapp.kafkarpc.clients;
+package com.easyapp.kafka.clients;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
-import com.easyapp.kafkarpc.bean.MessageKey;
+import com.easyapp.kafka.bean.MessageKey;
 
 public class ProducerCallback implements Callback {
 	private MessageKey messageKey;

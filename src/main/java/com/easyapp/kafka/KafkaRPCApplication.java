@@ -1,4 +1,4 @@
-package com.easyapp.kafkarpc;
+package com.easyapp.kafka;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

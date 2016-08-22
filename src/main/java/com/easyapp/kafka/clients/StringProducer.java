@@ -1,4 +1,4 @@
-package com.easyapp.kafkarpc.clients;
+package com.easyapp.kafka.clients;
 
 import java.util.Properties;
 
@@ -6,7 +6,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import com.easyapp.kafkarpc.bean.MessageKey;
+import com.easyapp.kafka.bean.MessageKey;
 
 public class StringProducer {
 	private final Properties producerProperties;

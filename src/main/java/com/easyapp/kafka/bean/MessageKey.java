@@ -1,4 +1,4 @@
-package com.easyapp.kafkarpc.bean;
+package com.easyapp.kafka.bean;
 
 public class MessageKey {
 	private final String topic;

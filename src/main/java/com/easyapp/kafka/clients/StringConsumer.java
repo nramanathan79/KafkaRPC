@@ -1,4 +1,4 @@
-package com.easyapp.kafkarpc.clients;
+package com.easyapp.kafka.clients;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -19,7 +19,8 @@ public class StringConsumer {
 		this.daemonize = daemonize;
 	}
 
-	public long consume(String topic, Class<? extends ConsumerPartitionCallable<String, String>> messageProcessorClass) {
+	public long consume(String topic,
+			Class<? extends ConsumerPartitionCallable<String, String>> messageProcessorClass) {
 		ExecutorService executor = daemonize ? Executors.newSingleThreadExecutor(new ThreadFactory() {
 
 			@Override
@@ -30,8 +31,8 @@ public class StringConsumer {
 			}
 		}) : Executors.newSingleThreadExecutor();
 
-		Future<Long> kafkaConsumer = executor.submit(new ConsumerCallable<String, String>(consumerProperties, "test",
-				messageProcessorClass, pollingIntervalMillis));
+		Future<Long> kafkaConsumer = executor.submit(
+				new ConsumerCallable<String, String>(consumerProperties, messageProcessorClass, pollingIntervalMillis));
 
 		long totalMessagesProcessed = 0;
 
@@ -42,7 +43,7 @@ public class StringConsumer {
 		} finally {
 			executor.shutdown();
 		}
-		
+
 		return totalMessagesProcessed;
 	}
 }

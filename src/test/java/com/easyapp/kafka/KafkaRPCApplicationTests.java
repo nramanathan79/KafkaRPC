@@ -1,4 +1,4 @@
-package com.easyapp.kafkarpc;
+package com.easyapp.kafka;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package com.easyapp.kafka.clients;
+package com.easyapp.kafka.consumer;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -20,7 +20,7 @@ public class StringConsumer {
 	}
 
 	public long consume(String topic,
-			Class<? extends ConsumerPartitionCallable<String, String>> messageProcessorClass) {
+			Class<? extends MessageProcessor<String, String>> messageProcessorClass) {
 		ExecutorService executor = daemonize ? Executors.newSingleThreadExecutor(new ThreadFactory() {
 
 			@Override

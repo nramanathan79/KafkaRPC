@@ -1,4 +1,4 @@
-package com.easyapp.kafka.clients;
+package com.easyapp.kafka.consumer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -17,11 +17,11 @@ import org.apache.kafka.common.TopicPartition;
 public class ConsumerCallable<K, V> implements Callable<Long> {
 	private final Properties consumerProperties;
 	private final String topic;
-	private final Class<? extends ConsumerPartitionCallable<K, V>> consumerPartitionProcessorClass;
+	private final Class<? extends MessageProcessor<K, V>> consumerPartitionProcessorClass;
 	private final long pollingIntervalMillis;
 
 	public ConsumerCallable(final Properties consumerProperties,
-			final Class<? extends ConsumerPartitionCallable<K, V>> consumerPartitionProcessorClass,
+			final Class<? extends MessageProcessor<K, V>> consumerPartitionProcessorClass,
 			final long pollingIntervalMillis) {
 		this.consumerProperties = consumerProperties;
 		this.topic = consumerProperties.getProperty("topic");

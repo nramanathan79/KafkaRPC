@@ -1,4 +1,4 @@
-package com.easyapp.kafka.clients;
+package com.easyapp.kafka.consumer;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -9,24 +9,31 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 
-public abstract class ConsumerPartitionCallable<K, V> implements Callable<Long> {
+public abstract class MessageProcessor<K, V> implements Callable<Long> {
 	private final KafkaConsumer<K, V> consumer;
 	private final TopicPartition topicPartition;
 	private final long pollingIntervalMillis;
 
-	public ConsumerPartitionCallable(final Properties consumerProperties, final TopicPartition topicPartition,
+	public MessageProcessor(final Properties consumerProperties, final TopicPartition topicPartition,
 			final long pollingIntervalMillis) {
 		this.consumer = new KafkaConsumer<>(consumerProperties);
 		this.topicPartition = topicPartition;
 		this.pollingIntervalMillis = pollingIntervalMillis;
 	}
 
-	abstract void process(final ConsumerRecord<K, V> record);
+	abstract protected V process(final ConsumerRecord<K, V> record);
+	
+	// Default implementation, override in subclasses 
+	protected void consume(final ConsumerRecord<K, V> record) {
+		process(record);
+	}
 
+	// Default implementation, override in subclasses 
 	protected void commit() {
 		consumer.commitAsync();
 	}
 
+	// Default implementation, override in subclasses 
 	protected void close() {
 		consumer.close();
 	}
@@ -36,8 +43,6 @@ public abstract class ConsumerPartitionCallable<K, V> implements Callable<Long> 
 		long recordsProcessed = 0;
 
 		try {
-			System.out.println(
-					"RAMBO 2: Topic = " + topicPartition.topic() + ", Partition = " + topicPartition.partition());
 			consumer.assign(Arrays.asList(topicPartition));
 
 			while (!Thread.currentThread().isInterrupted()) {
@@ -46,7 +51,7 @@ public abstract class ConsumerPartitionCallable<K, V> implements Callable<Long> 
 
 				if (records != null && !records.isEmpty()) {
 					// process each record.
-					records.forEach(record -> process(record));
+					records.forEach(record -> consume(record));
 
 					// Commit each batch. Default is Async. Override to change
 					// commit option.

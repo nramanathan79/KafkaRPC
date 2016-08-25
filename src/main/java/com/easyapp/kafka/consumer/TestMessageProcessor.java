@@ -1,11 +1,11 @@
-package com.easyapp.kafka.clients;
+package com.easyapp.kafka.consumer;
 
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
-public class TestMessageProcessor extends ConsumerPartitionCallable<String, String> {
+public class TestMessageProcessor extends MessageProcessor<String, String> {
 
 	public TestMessageProcessor(final Properties consumerProperties, final TopicPartition topicPartition,
 			long pollingIntervalMillis) {
@@ -13,7 +13,8 @@ public class TestMessageProcessor extends ConsumerPartitionCallable<String, Stri
 	}
 
 	@Override
-	void process(final ConsumerRecord<String, String> record) {
+	protected String process(final ConsumerRecord<String, String> record) {
 		System.out.println(record.value());
+		return record.value();
 	}
 }

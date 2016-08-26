@@ -79,6 +79,7 @@ public class KafkaProperties {
 				});
 
 				validatedProperties.put("bootstrap.servers", String.join(",", brokerList));
+				validatedProperties.remove("zookeeper.conect");
 
 				zk.close();
 			}

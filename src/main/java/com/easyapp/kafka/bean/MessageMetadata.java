@@ -1,10 +1,16 @@
 package com.easyapp.kafka.bean;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class MessageMetadata extends BaseMetadata {
+	
+	@JsonProperty("partition")
 	private int partition;
+	
+	@JsonProperty("offset")
 	private long offset;
 
-	protected MessageMetadata(final String key, final String topic) {
+	protected MessageMetadata(@JsonProperty("key") final String key, @JsonProperty("topic") final String topic) {
 		super(key, topic);
 	}
 

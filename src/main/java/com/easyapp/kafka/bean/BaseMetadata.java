@@ -3,15 +3,21 @@ package com.easyapp.kafka.bean;
 import java.io.IOException;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 public abstract class BaseMetadata {
-	private static final ObjectMapper jsonMapper = new ObjectMapper();
+	private static final ObjectMapper jsonMapper = new ObjectMapper().registerModule(new Jdk8Module());
+	
+	@JsonProperty("key")
 	private final String key;
+	
+	@JsonProperty("topic")
 	private final String topic;
 
-	protected BaseMetadata(final String key, final String topic) {
+	protected BaseMetadata(@JsonProperty("key") final String key, @JsonProperty("topic") final String topic) {
 		this.key = key;
 		this.topic = topic;
 	}

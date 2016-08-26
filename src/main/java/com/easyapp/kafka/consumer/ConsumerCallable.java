@@ -21,10 +21,11 @@ public class ConsumerCallable<K, V> implements Callable<Long> {
 	private final long pollingIntervalMillis;
 
 	public ConsumerCallable(final Properties consumerProperties,
+			final String topic,
 			final Class<? extends MessageProcessor<K, V>> consumerPartitionProcessorClass,
 			final long pollingIntervalMillis) {
 		this.consumerProperties = consumerProperties;
-		this.topic = consumerProperties.getProperty("topic");
+		this.topic = topic;
 		this.consumerPartitionProcessorClass = consumerPartitionProcessorClass;
 		this.pollingIntervalMillis = pollingIntervalMillis;
 	}
@@ -34,8 +35,8 @@ public class ConsumerCallable<K, V> implements Callable<Long> {
 		// Return the future threads for consumers to wait on.
 		List<Long> recordsProcessed = new ArrayList<>();
 
-		KafkaConsumer<K, V> consumer = new KafkaConsumer<>(consumerProperties);
-		List<PartitionInfo> partitions = consumer.partitionsFor(topic);
+		final KafkaConsumer<K, V> consumer = new KafkaConsumer<>(consumerProperties);
+		final List<PartitionInfo> partitions = consumer.partitionsFor(topic);
 		consumer.close();
 
 		if (partitions != null && !partitions.isEmpty()) {

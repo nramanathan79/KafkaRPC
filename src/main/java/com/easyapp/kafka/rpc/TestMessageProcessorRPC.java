@@ -1,13 +1,13 @@
-package com.easyapp.kafka.consumer;
+package com.easyapp.kafka.rpc;
 
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
-public class TestMessageProcessor extends MessageProcessor<String, String> {
+public class TestMessageProcessorRPC extends MessageProcessorRPC {
 
-	public TestMessageProcessor(final Properties consumerProperties, final TopicPartition topicPartition,
+	public TestMessageProcessorRPC(final Properties consumerProperties, final TopicPartition topicPartition,
 			long pollingIntervalMillis) {
 		super(consumerProperties, topicPartition, pollingIntervalMillis);
 	}

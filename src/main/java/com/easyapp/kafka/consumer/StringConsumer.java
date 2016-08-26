@@ -19,8 +19,8 @@ public class StringConsumer {
 		this.daemonize = daemonize;
 	}
 
-	public long consume(String topic,
-			Class<? extends MessageProcessor<String, String>> messageProcessorClass) {
+	public long consume(final String topic,
+			final Class<? extends MessageProcessor<String, String>> messageProcessorClass) {
 		ExecutorService executor = daemonize ? Executors.newSingleThreadExecutor(new ThreadFactory() {
 
 			@Override
@@ -32,7 +32,7 @@ public class StringConsumer {
 		}) : Executors.newSingleThreadExecutor();
 
 		Future<Long> kafkaConsumer = executor.submit(
-				new ConsumerCallable<String, String>(consumerProperties, messageProcessorClass, pollingIntervalMillis));
+				new ConsumerCallable<String, String>(consumerProperties, topic, messageProcessorClass, pollingIntervalMillis));
 
 		long totalMessagesProcessed = 0;
 

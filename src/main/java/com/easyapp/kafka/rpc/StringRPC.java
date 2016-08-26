@@ -1,5 +1,6 @@
 package com.easyapp.kafka.rpc;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +27,13 @@ public class StringRPC {
 	}
 
 	public Optional<String> rpcCall(final RPCMessageMetadata messageMetadata, final String requestMessage)
-			throws Exception {
+			throws IOException {
 		List<String> responseList = new ArrayList<>();
 
+		// Create a server socket to listen for response
 		ServerSocket serverSocket = new ServerSocket(messageMetadata.getReplyPort());
 
-		StringProducer producer = new StringProducer(producerProperties);
-		producer.send(messageMetadata, requestMessage);
-		producer.close();
-
+		// Create threads to accept connections from responding RPC consumers
 		ExecutorService executor = Executors.newFixedThreadPool(messageMetadata.getNumberOfConsumers());
 		List<Future<String>> threads = new ArrayList<>();
 
@@ -42,6 +41,12 @@ public class StringRPC {
 			threads.add(executor.submit(new RPCSocketServer(serverSocket)));
 		});
 
+		// Send the message to Kafka
+		StringProducer producer = new StringProducer(producerProperties);
+		producer.send(messageMetadata, requestMessage);
+		producer.close();
+
+		// Now listen and wait until timeout or message received
 		threads.forEach(thread -> {
 			try {
 				responseList.add(thread.get(timeoutMillis, TimeUnit.MILLISECONDS));
@@ -49,10 +54,13 @@ public class StringRPC {
 				e.printStackTrace();
 			}
 		});
-		
-		executor.shutdown();
 
-		return responseList.size() >= messageMetadata.getNumberOfConsumers()
-				? Optional.of("[" + String.join(", ", responseList) + "]") : Optional.empty();
+		executor.shutdown();
+		serverSocket.close();
+
+		// Return the list of response as a JSON array
+		return responseList.size() >= messageMetadata.getNumberOfConsumers() ? (responseList.size() == 1
+				? Optional.of(responseList.get(0)) : Optional.of("[" + String.join(", ", responseList) + "]"))
+				: Optional.empty();
 	}
 }

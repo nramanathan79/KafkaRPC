@@ -3,14 +3,26 @@ package com.easyapp.kafka.bean;
 import java.net.InetAddress;
 import java.util.Optional;
 
-public class RPCMessageMetadata extends MessageMetadata {
-	private final int numberOfConsumers;
-	private final InetAddress replyHost;
-	private final int replyPort;
-	private final Optional<String> replyTopic;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-	protected RPCMessageMetadata(final String key, final String topic, final InetAddress replyHost, final int replyPort,
-			final String replyTopicSuffix, final int numberOfConsumers) {
+public class RPCMessageMetadata extends MessageMetadata {
+	
+	@JsonProperty("replyHost")
+	private final InetAddress replyHost;
+
+	@JsonProperty("replyPort")
+	private final int replyPort;
+
+	@JsonProperty("replyTopic")
+	private final Optional<String> replyTopic;
+	
+	@JsonProperty("numberOfConsumers")
+	private final int numberOfConsumers;
+
+	protected RPCMessageMetadata(@JsonProperty("key") final String key, @JsonProperty("topic") final String topic,
+			@JsonProperty("replyHost") final InetAddress replyHost, @JsonProperty("replyPort") final int replyPort,
+			@JsonProperty("replyTopicSuffix") final String replyTopicSuffix,
+			@JsonProperty("numberOfConsumers") final int numberOfConsumers) {
 		super(key, topic);
 		this.replyHost = replyHost;
 		this.replyPort = replyPort;

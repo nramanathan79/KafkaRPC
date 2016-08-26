@@ -19,7 +19,7 @@ public class TestConsumer {
 			System.out.println("Total messages proceessed = " + consumer.consume(args[0], TestMessageProcessor.class));
 		}
 		else {
-			System.out.println("Usage: TestConsumer <topic> [-d]");
+			System.out.println("Usage: TestConsumerRPC <topic> [-d]");
 		}
 	}
 }

@@ -34,10 +34,9 @@ public class TestRPC {
 			final String message = getMessage(args[1]);
 
 			IntStream.rangeClosed(1, 100).forEach(i -> {
-				RPCMessageMetadata messageMetadata;
 				try {
-					messageMetadata = RPCMessageMetadata.getDirectRPCMessageMetadata(UUID.randomUUID().toString(),
-							topic, InetAddress.getLocalHost(),
+					RPCMessageMetadata messageMetadata = RPCMessageMetadata.getDirectRPCMessageMetadata(
+							UUID.randomUUID().toString(), topic, InetAddress.getLocalHost(),
 							Integer.parseInt(rpcProperties.getProperty("response.port")));
 
 					Optional<String> response = rpc.rpcCall(messageMetadata,

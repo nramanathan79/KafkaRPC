@@ -28,7 +28,7 @@ public class TestRPC {
 	public static void main(String[] args) {
 		if (args.length > 1) {
 			final Properties rpcProperties = KafkaProperties.getKafkaRPCProperties();
-			final StringRPC rpc = new StringRPC(rpcProperties, 10000);
+			final StringRPC rpc = new StringRPC(rpcProperties);
 
 			final String topic = args[0];
 			final String message = getMessage(args[1]);
@@ -40,7 +40,7 @@ public class TestRPC {
 							Integer.parseInt(rpcProperties.getProperty("response.port")));
 
 					Optional<String> response = rpc.rpcCall(messageMetadata,
-							message.replaceFirst("(id)", messageMetadata.getKey()));
+							message.replaceFirst("(id)", messageMetadata.getKey()), 10000);
 
 					System.out.println("Message: " + i + " sent to topic: " + topic + " returned response: "
 							+ (response.isPresent() ? response.get() : "TIMED OUT"));

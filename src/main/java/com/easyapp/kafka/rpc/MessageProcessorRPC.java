@@ -40,7 +40,7 @@ public abstract class MessageProcessorRPC extends MessageProcessor<String, Strin
 			RPCMessageMetadata rpcMessageMetadata = messageMetadata.get();
 
 			if (rpcMessageMetadata.getReplyTopic().isPresent()) {
-				producer.send(rpcMessageMetadata.getUpdatedMessageMetadata(rpcMessageMetadata.getReplyTopic().get()),
+				producer.sendAsync(rpcMessageMetadata.getUpdatedMessageMetadata(rpcMessageMetadata.getReplyTopic().get()),
 						process(record));
 			} else {
 				RPCSocketClient.send(rpcMessageMetadata, process(record));

@@ -30,14 +30,19 @@ public class TestProducer {
 			final String message = getMessage(args[1]);
 
 			IntStream.rangeClosed(1, 100).forEach(i -> {
-				final MessageMetadata messageMetadata = MessageMetadata.getMessageMetadata(UUID.randomUUID().toString(),
-						topic);
-				final MessageMetadata producedMessageMetadata = producer
-						.send(messageMetadata, message.replaceFirst("(id)", messageMetadata.getKey())).get();
+				try {
+					final MessageMetadata messageMetadata = MessageMetadata
+							.getMessageMetadata(UUID.randomUUID().toString(), topic);
 
-				System.out.println("Message: " + i + " sent to topic-partition: " + producedMessageMetadata.getTopic()
-						+ "-" + producedMessageMetadata.getPartition() + " is stored at offset: "
-						+ producedMessageMetadata.getOffset());
+					final MessageMetadata producedMessageMetadata = producer
+							.sendSync(messageMetadata, message.replaceFirst("(id)", messageMetadata.getKey())).get();
+
+					System.out.println("Message: " + i + " sent to topic-partition: "
+							+ producedMessageMetadata.getTopic() + "-" + producedMessageMetadata.getPartition()
+							+ " is stored at offset: " + producedMessageMetadata.getOffset());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			});
 
 			producer.close();

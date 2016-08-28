@@ -7,10 +7,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
+import com.easyapp.kafka.util.KafkaProperties;
+
 public class StringConsumer {
 	private final Properties consumerProperties;
 	private final long pollingIntervalMillis;
 	private final boolean daemonize;
+
+	public StringConsumer() {
+		this.consumerProperties = KafkaProperties.getKafkaConsumerProperties();
+		this.pollingIntervalMillis = 100L;
+		this.daemonize = false;
+	}
+
+	public StringConsumer(final long pollingInterfalMillis, final boolean daemonize) {
+		this.consumerProperties = KafkaProperties.getKafkaConsumerProperties();
+		this.pollingIntervalMillis = pollingInterfalMillis;
+		this.daemonize = daemonize;
+	}
 
 	public StringConsumer(final Properties consumerProperties, final long pollingInterfalMillis,
 			final boolean daemonize) {
@@ -31,8 +45,8 @@ public class StringConsumer {
 			}
 		}) : Executors.newSingleThreadExecutor();
 
-		Future<Long> kafkaConsumer = executor.submit(
-				new ConsumerCallable<String, String>(consumerProperties, topic, messageProcessorClass, pollingIntervalMillis));
+		Future<Long> kafkaConsumer = executor.submit(new ConsumerCallable<String, String>(consumerProperties, topic,
+				messageProcessorClass, pollingIntervalMillis));
 
 		long totalMessagesProcessed = 0;
 

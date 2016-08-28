@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,18 +25,21 @@ import com.easyapp.kafka.rpc.StringRPC;
 
 @RestController
 public class KafkaRPCRestController<T> {
+	@Autowired
+	private StringRPC rpc;
+
+	@Autowired
+	private RPCService rpcService;
 
 	@RequestMapping(value = "/rpcDirect/{topic}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> callRPCDirect(@PathVariable("topic") final String topic,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
 			@RequestBody @Valid String requestMessage) {
-		final StringRPC rpc = new StringRPC(RPCService.getRPCProperties(),
-				timeoutMillis == null ? 10000 : timeoutMillis);
-
 		try {
-			Optional<String> responseMessage = rpc
-					.rpcCall(RPCMessageMetadata.getDirectRPCMessageMetadata(UUID.randomUUID().toString(), topic,
-							InetAddress.getLocalHost(), RPCService.getRPCResponsePort()), requestMessage);
+			Optional<String> responseMessage = rpc.rpcCall(
+					RPCMessageMetadata.getDirectRPCMessageMetadata(UUID.randomUUID().toString(), topic,
+							InetAddress.getLocalHost(), rpcService.getRPCResponsePort()),
+					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
 		} catch (IOException | NumberFormatException | NoSuchElementException e) {
@@ -49,14 +53,11 @@ public class KafkaRPCRestController<T> {
 			@PathVariable("numberOfConsumers") final int numberOfConsumers,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
 			@RequestBody @Valid String requestMessage) {
-		final StringRPC rpc = new StringRPC(RPCService.getRPCProperties(),
-				timeoutMillis == null ? 10000 : timeoutMillis);
-
 		try {
 			Optional<String> responseMessage = rpc.rpcCall(
 					RPCMessageMetadata.getScatterGatherRPCMessageMetadata(UUID.randomUUID().toString(), topic,
-							InetAddress.getLocalHost(), RPCService.getRPCResponsePort(), numberOfConsumers),
-					requestMessage);
+							InetAddress.getLocalHost(), rpcService.getRPCResponsePort(), numberOfConsumers),
+					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
 		} catch (IOException | NumberFormatException | NoSuchElementException e) {
@@ -69,13 +70,11 @@ public class KafkaRPCRestController<T> {
 	public ResponseEntity<String> callRPCStaged(@PathVariable("topic") final String topic,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
 			@RequestBody @Valid String requestMessage) {
-		final StringRPC rpc = new StringRPC(RPCService.getRPCProperties(),
-				timeoutMillis == null ? 10000 : timeoutMillis);
-
 		try {
-			Optional<String> responseMessage = rpc
-					.rpcCall(RPCMessageMetadata.getStagedRPCMessageMetadata(UUID.randomUUID().toString(), topic,
-							InetAddress.getLocalHost(), RPCService.getRPCResponsePort()), requestMessage);
+			Optional<String> responseMessage = rpc.rpcCall(
+					RPCMessageMetadata.getStagedRPCMessageMetadata(UUID.randomUUID().toString(), topic,
+							InetAddress.getLocalHost(), rpcService.getRPCResponsePort()),
+					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
 		} catch (IOException | NumberFormatException | NoSuchElementException e) {

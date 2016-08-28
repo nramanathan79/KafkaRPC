@@ -13,10 +13,10 @@ import com.easyapp.kafka.util.KafkaProperties;
 
 @Service
 public class RPCService {
-	private static final Properties rpcProperties = KafkaProperties.getKafkaRPCProperties();
-	private static int rpcResponsePort;
-	private static ServerSocket serverSocket = null;
-
+	private final Properties rpcProperties = KafkaProperties.getKafkaRPCProperties();
+	private int rpcResponsePort;
+	private ServerSocket serverSocket = null;
+	
 	@PostConstruct
 	public void init() {
 		try {
@@ -32,20 +32,16 @@ public class RPCService {
 		}
 	}
 
-	public static ServerSocket getRPCServerSocket() {
+	public ServerSocket getRPCServerSocket() {
 		return serverSocket;
 	}
 
-	public static Properties getRPCProperties() {
+	public Properties getRPCProperties() {
 		return rpcProperties;
 	}
 
-	public static int getRPCResponsePort() {
+	public int getRPCResponsePort() {
 		return rpcResponsePort;
-	}
-
-	public static void setRpcResponsePort(int rpcResponsePort) {
-		RPCService.rpcResponsePort = rpcResponsePort;
 	}
 
 	@PreDestroy

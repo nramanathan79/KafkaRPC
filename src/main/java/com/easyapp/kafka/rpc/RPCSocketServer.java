@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 
-public class RPCSocketServer implements Callable<String> {
+public class RPCSocketServer implements Callable<Void> {
 	private final ServerSocket serverSocket;
 
 	public RPCSocketServer(final ServerSocket serverSocket) {
@@ -17,50 +17,57 @@ public class RPCSocketServer implements Callable<String> {
 	}
 
 	@Override
-	public String call() throws Exception {
-		Socket clientSocket = null;
-		BufferedReader reader = null;
-		StringBuilder builder = new StringBuilder();
+	public Void call() throws Exception {
+		// Run in this thread a server listening to various messages.
+		while (!Thread.currentThread().isInterrupted()) {
+			Socket clientSocket = null;
+			BufferedReader reader = null;
 
-		try {
-			// Accept a connection from client
-			clientSocket = serverSocket.accept();
-
-			// Read until EOF
-			boolean EOF = false;
-			reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-			while (!EOF && !Thread.currentThread().isInterrupted()) {
-				String line = reader.readLine();
-
-				if (line == null || ("EOF").equals(line)) {
-					EOF = true;
-				} else {
-					builder.append(line);
-				}
-			}
-
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-			out.println("OK");
-			out.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
 			try {
-				if (reader != null) {
-					reader.close();
+				// Accept the socket connection from client
+				clientSocket = serverSocket.accept();
+
+				// Read until EOF
+				boolean EOF = false;
+				reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				StringBuilder builder = new StringBuilder();
+
+				while (!EOF) {
+					String line = reader.readLine();
+
+					if (line == null || ("EOF").equals(line)) {
+						EOF = true;
+					} else {
+						builder.append(line);
+					}
 				}
 
-				if (clientSocket != null) {
-					clientSocket.close();
-				}
+				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+				out.println("OK");
+
+				// Close Streams and Socket
+				out.close();
+				reader.close();
+				clientSocket.close();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} finally {
+				try {
+					if (reader != null) {
+						reader.close();
+					}
+
+					if (clientSocket != null) {
+						clientSocket.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-
-		return builder.toString();
+		
+		return null;
 	}
 }

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.springframework.stereotype.Service;
@@ -17,8 +16,7 @@ public class RPCService {
 	private int rpcResponsePort;
 	private ServerSocket serverSocket = null;
 	
-	@PostConstruct
-	public void init() {
+	public RPCService() {
 		try {
 			rpcResponsePort = Integer.parseInt(rpcProperties.getProperty("response.port"));
 		} catch (Exception e) {

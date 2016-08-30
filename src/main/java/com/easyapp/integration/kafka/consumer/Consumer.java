@@ -13,10 +13,20 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 
+import com.easyapp.integration.kafka.util.KafkaProperties;
+
 public class Consumer<K, V> {
 	private final Properties consumerProperties;
 	private final long pollingIntervalMillis;
 
+	public Consumer() {
+		this(KafkaProperties.getKafkaConsumerProperties(), 100L);
+	}
+	
+	public Consumer(final long pollingIntervalMillis) {
+		this(KafkaProperties.getKafkaConsumerProperties(), pollingIntervalMillis);
+	}
+	
 	public Consumer(final Properties consumerProperties, final long pollingIntervalMillis) {
 		this.consumerProperties = consumerProperties;
 		this.pollingIntervalMillis = pollingIntervalMillis;

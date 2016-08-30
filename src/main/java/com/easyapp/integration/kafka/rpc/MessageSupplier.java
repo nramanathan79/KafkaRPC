@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import com.easyapp.integration.kafka.util.Pair;
@@ -13,17 +14,19 @@ import com.easyapp.integration.kafka.util.Pair;
 public class MessageSupplier implements Callable<Void>, Supplier<Pair<String, String>> {
 	private final Socket clientSocket;
 	private final RPCService rpcService;
+	private final long timeoutMillis;
 
-	public MessageSupplier(final Socket clientSocket, final RPCService rpcService) {
+	public MessageSupplier(final Socket clientSocket, final RPCService rpcService, final long timeoutMillis) {
 		this.clientSocket = clientSocket;
 		this.rpcService = rpcService;
+		this.timeoutMillis = timeoutMillis;
 	}
 
 	@Override
 	public Void call() throws Exception {
 		Pair<String, String> message = get();
 
-		rpcService.getQueue(message.getKey()).put(message.getValue());
+		rpcService.getQueue(message.getKey()).offer(message.getValue(), timeoutMillis, TimeUnit.MILLISECONDS);
 
 		return null;
 	}

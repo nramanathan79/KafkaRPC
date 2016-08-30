@@ -44,7 +44,7 @@ public class KafkaProperties {
 		return properties;
 	}
 
-	public static Properties validateProperties(final Properties properties) throws KafkaException {
+	private static Properties validateProperties(final Properties properties) throws KafkaException {
 		Properties validatedProperties = new Properties();
 		validatedProperties.putAll(properties);
 
@@ -100,7 +100,7 @@ public class KafkaProperties {
 		return validatedProperties;
 	}
 	
-	public static Properties validateConsumerProperties(Properties properties) throws KafkaException {
+	private static Properties validateConsumerProperties(Properties properties) throws KafkaException {
 		Properties validatedProperties = validateProperties(properties);
 		
 		final String groupId = validatedProperties.getProperty("group.id");
@@ -111,31 +111,34 @@ public class KafkaProperties {
 		
 		return validatedProperties;
 	}
-
-	public static Properties getKafkaConsumerProperties() throws KafkaException {
-		Properties consumerProperties = getKafkaProperties("kafka.consumer.properties");
+	
+	public static Properties getValidatedConsumerProperties(Properties properties) throws KafkaException {
+		Properties consumerProperties = validateConsumerProperties(properties);
 
 		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+		
+		return consumerProperties;
+	}
 
-		return validateConsumerProperties(consumerProperties);
+	public static Properties getValidatedProducerProperties(Properties properties) throws KafkaException {
+		Properties producerProperties = validateProperties(properties);
+
+		producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		
+		return producerProperties;
+	}
+
+	public static Properties getKafkaConsumerProperties() throws KafkaException {
+		return getValidatedConsumerProperties(getKafkaProperties("kafka.consumer.properties"));
 	}
 
 	public static Properties getKafkaProducerProperties() throws KafkaException {
-		Properties producerProperties = getKafkaProperties("kafka.producer.properties");
-
-		producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-
-		return validateProperties(producerProperties);
+		return getValidatedProducerProperties(getKafkaProperties("kafka.producer.properties"));
 	}
 
 	public static Properties getKafkaRPCProperties() throws KafkaException {
-		Properties producerProperties = getKafkaProperties("kafka.rpc.properties");
-
-		producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-
-		return validateProperties(producerProperties);
+		return getValidatedProducerProperties(getKafkaProperties("kafka.rpc.properties"));
 	}
 }

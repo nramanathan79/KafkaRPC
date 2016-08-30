@@ -10,10 +10,12 @@ import java.util.concurrent.Executors;
 public class RPCSocketServer implements Callable<Void> {
 	private final ServerSocket serverSocket;
 	private final RPCService rpcService;
+	private final long timeoutMillis;
 
-	public RPCSocketServer(final ServerSocket serverSocket, final RPCService rpcService) {
+	public RPCSocketServer(final ServerSocket serverSocket, final RPCService rpcService, final long timeoutMillis) {
 		this.serverSocket = serverSocket;
 		this.rpcService = rpcService;
+		this.timeoutMillis = timeoutMillis;
 	}
 
 	@Override
@@ -29,7 +31,7 @@ public class RPCSocketServer implements Callable<Void> {
 					clientSocket = serverSocket.accept();
 
 					// Run the socket connection on its own thread
-					executor.submit(new MessageSupplier(clientSocket, rpcService));
+					executor.submit(new MessageSupplier(clientSocket, rpcService, timeoutMillis));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

@@ -50,7 +50,7 @@ public class StringRPC {
 		rpcService.addToRegistry(messageMetadata.getKey());
 
 		IntStream.rangeClosed(1, messageMetadata.getNumberOfConsumers()).forEach(i -> {
-			threads.add(executor.submit(new MessageReceiver(messageMetadata.getKey(), rpcService)));
+			threads.add(executor.submit(new MessageReceiver(messageMetadata.getKey(), rpcService, timeoutMillis)));
 		});
 
 		// Send the message to Kafka

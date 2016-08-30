@@ -24,6 +24,7 @@ public class RPCService {
 
 	private ServerSocket serverSocket;
 	private int rpcResponsePort;
+	private long timeoutMillis;
 
 	public RPCService() {
 		final Properties rpcProperties = KafkaProperties.getKafkaRPCProperties();
@@ -35,8 +36,14 @@ public class RPCService {
 		}
 
 		try {
+			timeoutMillis = Long.parseLong(rpcProperties.getProperty("response.timeout.millis"));
+		} catch (Exception e) {
+			rpcResponsePort = 11111;
+		}
+
+		try {
 			serverSocket = new ServerSocket(rpcResponsePort);
-			executor.submit(new RPCSocketServer(serverSocket, this));
+			executor.submit(new RPCSocketServer(serverSocket, this, timeoutMillis));
 		} catch (IOException e) {
 			e.printStackTrace();
 			serverSocket = null;
@@ -45,6 +52,10 @@ public class RPCService {
 
 	public int getRPCResponsePort() {
 		return rpcResponsePort;
+	}
+	
+	public long getTimeoutMillis() {
+		return timeoutMillis;
 	}
 
 	public void addToRegistry(String key) {

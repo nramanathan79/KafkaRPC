@@ -31,7 +31,7 @@ public class KafkaRPCRestController<T> {
 	@Autowired
 	private StringRPC rpc;
 
-	@RequestMapping(value = "/rpcDirect/{topic}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/kafkaRPCDirect/{topic}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> callRPCDirect(@PathVariable("topic") final String topic,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
 			@RequestBody @Valid String requestMessage) {
@@ -48,7 +48,7 @@ public class KafkaRPCRestController<T> {
 		}
 	}
 
-	@RequestMapping(value = "/rpcScatterGather/{topic}/{numberOfConsumers}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/kafkaRPCScatterGather/{topic}/{numberOfConsumers}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> callRPCScatterGather(@PathVariable("topic") final String topic,
 			@PathVariable("numberOfConsumers") final int numberOfConsumers,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
@@ -66,7 +66,7 @@ public class KafkaRPCRestController<T> {
 		}
 	}
 
-	@RequestMapping(value = "/rpcStaged/{topic}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/kafkaRPCStaged/{topic}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> callRPCStaged(@PathVariable("topic") final String topic,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
 			@RequestBody @Valid String requestMessage) {

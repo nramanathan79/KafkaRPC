@@ -7,7 +7,7 @@ import com.easyapp.integration.kafka.util.KafkaProperties;
 public class StringConsumer extends Consumer<String, String> {
 
 	public StringConsumer() {
-		super(KafkaProperties.getKafkaConsumerProperties(), 100L);
+		super(KafkaProperties.getKafkaConsumerProperties(), DEFAULT_POLLING_INTERVAL_MILLIS);
 	}
 
 	public StringConsumer(final long pollingInterfalMillis) {

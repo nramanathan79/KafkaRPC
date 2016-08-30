@@ -18,9 +18,11 @@ import com.easyapp.integration.kafka.util.KafkaProperties;
 public class Consumer<K, V> {
 	private final Properties consumerProperties;
 	private final long pollingIntervalMillis;
+	
+	public static final long DEFAULT_POLLING_INTERVAL_MILLIS = 100L;
 
 	public Consumer() {
-		this(KafkaProperties.getKafkaConsumerProperties(), 100L);
+		this(KafkaProperties.getKafkaConsumerProperties(), DEFAULT_POLLING_INTERVAL_MILLIS);
 	}
 	
 	public Consumer(final long pollingIntervalMillis) {

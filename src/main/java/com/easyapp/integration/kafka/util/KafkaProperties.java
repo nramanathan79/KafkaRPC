@@ -44,7 +44,7 @@ public class KafkaProperties {
 		return properties;
 	}
 
-	private static Properties validateProperties(final Properties properties) throws KafkaException {
+	public static Properties validateProperties(final Properties properties) throws KafkaException {
 		Properties validatedProperties = new Properties();
 		validatedProperties.putAll(properties);
 
@@ -100,7 +100,7 @@ public class KafkaProperties {
 		return validatedProperties;
 	}
 	
-	private static Properties validateConsumerProperties(Properties properties) throws KafkaException {
+	public static Properties validateConsumerProperties(Properties properties) throws KafkaException {
 		Properties validatedProperties = validateProperties(properties);
 		
 		final String groupId = validatedProperties.getProperty("group.id");

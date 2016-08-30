@@ -22,7 +22,8 @@ import com.easyapp.kafka.util.KafkaProperties;
 
 public class TestRPC implements Callable<String> {
 	private static final Properties rpcProperties = KafkaProperties.getKafkaRPCProperties();
-	private static final StringRPC rpc = new StringRPC(rpcProperties);
+	private static final RPCService rpcService = new RPCService();
+	private static final StringRPC rpc = new StringRPC(rpcService, rpcProperties);
 
 	private final String topic;
 	private final String message;
@@ -72,6 +73,8 @@ public class TestRPC implements Callable<String> {
 			ExecutorService executor = Executors.newFixedThreadPool(50);
 			List<Future<String>> threads = new ArrayList<>();
 
+			long startTime = System.currentTimeMillis();
+
 			IntStream.rangeClosed(1, 50).forEach(i -> {
 				threads.add(executor.submit(new TestRPC(args[0], args[1], i)));
 			});
@@ -83,9 +86,14 @@ public class TestRPC implements Callable<String> {
 					e.printStackTrace();
 				}
 			});
+			
+			long endTime = System.currentTimeMillis();
 
-			executor.shutdown();
+			System.out.println("Processed 50 RPC messages in " + (endTime - startTime) + "ms with average time = " + (endTime - startTime) / 50.0d + "ms.");
+
+			rpcService.destroy();
 			rpc.destroy();
+			executor.shutdown();
 		} else {
 			System.out.println("Usage: TestRPC <topic> <input file URI>");
 		}

@@ -24,17 +24,18 @@ import com.easyapp.kafka.util.KafkaProperties;
 
 @Component
 public class StringRPC {
-	@Autowired
 	private RPCService rpcService;
-	
 	private final StringProducer producer;
 
-	public StringRPC() {
-		producer = new StringProducer(KafkaProperties.getKafkaRPCProperties());
+	@Autowired
+	public StringRPC(final RPCService rpcService) {
+		this.rpcService = rpcService;
+		this.producer = new StringProducer(KafkaProperties.getKafkaRPCProperties());
 	}
 
-	public StringRPC(final Properties producerProperties) {
-		producer = new StringProducer(producerProperties);
+	public StringRPC(final RPCService rpcService, final Properties producerProperties) {
+		this.rpcService = rpcService;
+		this.producer = new StringProducer(producerProperties);
 	}
 
 	public Optional<String> rpcCall(final RPCMessageMetadata messageMetadata, final String requestMessage,
@@ -46,8 +47,10 @@ public class StringRPC {
 		ExecutorService executor = Executors.newFixedThreadPool(messageMetadata.getNumberOfConsumers());
 		List<Future<String>> threads = new ArrayList<>();
 
+		rpcService.addToRegistry(messageMetadata.getKey());
+
 		IntStream.rangeClosed(1, messageMetadata.getNumberOfConsumers()).forEach(i -> {
-			threads.add(executor.submit(new RPCSocketServer(rpcService.getRPCServerSocket())));
+			threads.add(executor.submit(new MessageReceiver(messageMetadata.getKey(), rpcService)));
 		});
 
 		// Send the message to Kafka
@@ -64,6 +67,7 @@ public class StringRPC {
 		});
 
 		executor.shutdown();
+		rpcService.removeFromRegistry(messageMetadata.getKey());
 
 		// Return the list of response as a JSON array
 		return responseList.size() >= messageMetadata.getNumberOfConsumers() ? (responseList.size() == 1

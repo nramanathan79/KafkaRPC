@@ -26,10 +26,10 @@ import com.easyapp.kafka.rpc.StringRPC;
 @RestController
 public class KafkaRPCRestController<T> {
 	@Autowired
-	private StringRPC rpc;
+	private RPCService rpcService;
 
 	@Autowired
-	private RPCService rpcService;
+	private StringRPC rpc;
 
 	@RequestMapping(value = "/rpcDirect/{topic}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> callRPCDirect(@PathVariable("topic") final String topic,

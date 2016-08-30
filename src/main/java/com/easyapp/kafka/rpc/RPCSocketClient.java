@@ -23,7 +23,8 @@ public class RPCSocketClient {
 
 			// Write the response
 			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-			out.println(response);
+			out.println("KEY:" + messageMetadata.getKey());
+			out.println("VALUE:" + response);
 			out.println("EOF");
 
 			// Wait for an OK

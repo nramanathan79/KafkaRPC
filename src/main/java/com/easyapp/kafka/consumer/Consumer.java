@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,24 +13,17 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 
-public class ConsumerCallable<K, V> implements Callable<Long> {
+public class Consumer<K, V> {
 	private final Properties consumerProperties;
-	private final String topic;
-	private final Class<? extends MessageProcessor<K, V>> consumerPartitionProcessorClass;
 	private final long pollingIntervalMillis;
 
-	public ConsumerCallable(final Properties consumerProperties,
-			final String topic,
-			final Class<? extends MessageProcessor<K, V>> consumerPartitionProcessorClass,
-			final long pollingIntervalMillis) {
+	public Consumer(final Properties consumerProperties, final long pollingIntervalMillis) {
 		this.consumerProperties = consumerProperties;
-		this.topic = topic;
-		this.consumerPartitionProcessorClass = consumerPartitionProcessorClass;
 		this.pollingIntervalMillis = pollingIntervalMillis;
 	}
 
-	@Override
-	public Long call() throws Exception {
+	public long consume(final String topic,
+			final Class<? extends MessageProcessor<String, String>> messageProcessorClass) {
 		// Return the future threads for consumers to wait on.
 		List<Long> recordsProcessed = new ArrayList<>();
 
@@ -46,10 +38,10 @@ public class ConsumerCallable<K, V> implements Callable<Long> {
 					long.class };
 
 			List<Future<Long>> threads = new ArrayList<>();
-			
+
 			partitions.forEach(partition -> {
 				try {
-					threads.add(executor.submit(consumerPartitionProcessorClass
+					threads.add(executor.submit(messageProcessorClass
 							.getDeclaredConstructor(constructorParameterClasses).newInstance(consumerProperties,
 									new TopicPartition(topic, partition.partition()), pollingIntervalMillis)));
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException

@@ -14,12 +14,12 @@ import com.easyapp.integration.kafka.bean.RPCMessageMetadata;
 
 public class StagedMessageProcessorRPC extends MessageProcessorRPC {
 	private static final Map<String, List<String>> messageMap = new ConcurrentHashMap<>();
-	private final int numberOfConsumersPerKey;
+	private final int numberOfConsumers;
 
-	public StagedMessageProcessorRPC(Properties consumerProperties, TopicPartition topicPartition,
-			long pollingIntervalMillis) {
+	public StagedMessageProcessorRPC(final Properties consumerProperties, final TopicPartition topicPartition,
+			final long pollingIntervalMillis) {
 		super(consumerProperties, topicPartition, pollingIntervalMillis);
-		numberOfConsumersPerKey = Integer.parseInt(consumerProperties.getProperty("number.consumers.per.key"));
+		numberOfConsumers = Integer.parseInt(String.valueOf(consumerProperties.get("number.of.consumers")));
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class StagedMessageProcessorRPC extends MessageProcessorRPC {
 			result.add(process(record));
 			messageMap.put(rpcMessageMetadata.getKey(), result);
 
-			if (result.size() >= numberOfConsumersPerKey) {
+			if (result.size() >= numberOfConsumers) {
 				RPCSocketClient.send(rpcMessageMetadata,
-						numberOfConsumersPerKey > 1 ? "[" + String.join(", ", result) + "]" : result.get(0));
+						numberOfConsumers > 1 ? "[" + String.join(", ", result) + "]" : result.get(0));
 
 				messageMap.remove(rpcMessageMetadata.getKey());
 			}

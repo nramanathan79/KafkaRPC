@@ -1,7 +1,5 @@
 package com.easyapp.integration.kafka.restcontroller;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,11 +36,11 @@ public class KafkaRPCRestController<T> {
 		try {
 			Optional<String> responseMessage = rpc.rpcCall(
 					RPCMessageMetadata.getDirectRPCMessageMetadata(UUID.randomUUID().toString(), topic,
-							InetAddress.getLocalHost(), rpcService.getRPCResponsePort()),
+							rpcService.getResponseHost(), rpcService.getRPCResponsePort()),
 					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
-		} catch (IOException | NumberFormatException | NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -56,11 +54,11 @@ public class KafkaRPCRestController<T> {
 		try {
 			Optional<String> responseMessage = rpc.rpcCall(
 					RPCMessageMetadata.getScatterGatherRPCMessageMetadata(UUID.randomUUID().toString(), topic,
-							InetAddress.getLocalHost(), rpcService.getRPCResponsePort(), numberOfConsumers),
+							rpcService.getResponseHost(), rpcService.getRPCResponsePort(), numberOfConsumers),
 					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
-		} catch (IOException | NumberFormatException | NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -73,11 +71,11 @@ public class KafkaRPCRestController<T> {
 		try {
 			Optional<String> responseMessage = rpc.rpcCall(
 					RPCMessageMetadata.getStagedRPCMessageMetadata(UUID.randomUUID().toString(), topic,
-							InetAddress.getLocalHost(), rpcService.getRPCResponsePort()),
+							rpcService.getResponseHost(), rpcService.getRPCResponsePort()),
 					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
-		} catch (IOException | NumberFormatException | NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

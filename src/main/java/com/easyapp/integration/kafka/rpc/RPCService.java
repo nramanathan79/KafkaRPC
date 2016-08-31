@@ -1,7 +1,9 @@
 package com.easyapp.integration.kafka.rpc;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
@@ -23,12 +25,25 @@ public class RPCService {
 	private final Map<String, BlockingQueue<String>> rpcRegistry = new ConcurrentHashMap<>();
 
 	private ServerSocket serverSocket;
+	private InetAddress rpcResponseHost;
 	private int rpcResponsePort;
 	private long timeoutMillis;
 
 	public RPCService() {
 		final Properties rpcProperties = KafkaProperties.getKafkaRPCProperties();
 
+		try {
+			final String responseHost = rpcProperties.getProperty("response.host");
+			rpcResponseHost = InetAddress.getByName(responseHost);
+		} catch (UnknownHostException e) {
+			try {
+			rpcResponseHost = InetAddress.getLocalHost();
+			}
+			catch (UnknownHostException uhe) {
+				uhe.printStackTrace();
+			}
+		}
+		
 		try {
 			rpcResponsePort = Integer.parseInt(rpcProperties.getProperty("response.port"));
 		} catch (Exception e) {
@@ -50,10 +65,14 @@ public class RPCService {
 		}
 	}
 
+	public InetAddress getResponseHost() {
+		return rpcResponseHost;
+	}
+	
 	public int getRPCResponsePort() {
 		return rpcResponsePort;
 	}
-	
+
 	public long getTimeoutMillis() {
 		return timeoutMillis;
 	}

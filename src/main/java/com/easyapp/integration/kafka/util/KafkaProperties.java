@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -19,6 +21,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class KafkaProperties {
+	private static String resolveValueWithEnvVars(final String value) {
+		if (value == null) {
+			return value;
+		}
+
+		final Pattern envVarPattern = Pattern.compile("\\$\\{([A-Za-z0-9\\.]+)\\}");
+		final Matcher envVarMatcher = envVarPattern.matcher(value);
+		final StringBuffer buffer = new StringBuffer();
+
+		while (envVarMatcher.find()) {
+			String envVarValue = System.getenv(envVarMatcher.group(1));
+			envVarMatcher.appendReplacement(buffer, envVarValue == null ? "" : Matcher.quoteReplacement(envVarValue));
+		}
+
+		envVarMatcher.appendTail(buffer);
+
+		return buffer.toString();
+	}
+
 	private static Properties getKafkaProperties(final String fileName) throws KafkaException {
 		Properties properties = new Properties();
 		InputStream input = null;
@@ -41,7 +62,13 @@ public class KafkaProperties {
 			}
 		}
 
-		return properties;
+		Properties expandedEnvProperties = new Properties();
+
+		properties.forEach((key, value) -> {
+			expandedEnvProperties.put(key, resolveValueWithEnvVars(String.valueOf(value)));
+		});
+
+		return expandedEnvProperties;
 	}
 
 	private static Properties validateProperties(final Properties properties) throws KafkaException {
@@ -66,7 +93,7 @@ public class KafkaProperties {
 						// Nothing to do
 					}
 				});
-				
+
 				List<String> brokerList = new ArrayList<String>();
 
 				zk.getChildren("/brokers/ids", false).forEach(id -> {
@@ -83,9 +110,9 @@ public class KafkaProperties {
 
 				zk.close();
 			}
-			
+
 			final String clientId = validatedProperties.getProperty("client.id");
-			
+
 			if (clientId == null || clientId.trim().isEmpty()) {
 				throw new KafkaException("client.id property must be present");
 			}
@@ -99,25 +126,25 @@ public class KafkaProperties {
 
 		return validatedProperties;
 	}
-	
+
 	private static Properties validateConsumerProperties(Properties properties) throws KafkaException {
 		Properties validatedProperties = validateProperties(properties);
-		
+
 		final String groupId = validatedProperties.getProperty("group.id");
-		
+
 		if (groupId == null || groupId.trim().isEmpty()) {
 			validatedProperties.put("group.id", validatedProperties.get("client.id"));
 		}
-		
+
 		return validatedProperties;
 	}
-	
+
 	public static Properties getValidatedConsumerProperties(Properties properties) throws KafkaException {
 		Properties consumerProperties = validateConsumerProperties(properties);
 
 		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		
+
 		return consumerProperties;
 	}
 
@@ -126,7 +153,7 @@ public class KafkaProperties {
 
 		producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		
+
 		return producerProperties;
 	}
 

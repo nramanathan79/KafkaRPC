@@ -46,7 +46,7 @@ public class KafkaProperties {
 
 		try {
 			// open the properties file
-			input = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName);
+			input = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
 
 			// load a properties file
 			properties.load(input);

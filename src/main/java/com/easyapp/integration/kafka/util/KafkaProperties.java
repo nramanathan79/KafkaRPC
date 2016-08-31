@@ -67,7 +67,7 @@ public class KafkaProperties {
 		properties.forEach((key, value) -> {
 			expandedEnvProperties.put(key, resolveValueWithEnvVars(String.valueOf(value)));
 		});
-
+System.out.println("RAMBO: " + expandedEnvProperties);
 		return expandedEnvProperties;
 	}
 

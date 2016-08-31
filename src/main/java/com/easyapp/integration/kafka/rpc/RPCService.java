@@ -36,7 +36,7 @@ public class RPCService {
 		}
 
 		try {
-			timeoutMillis = Long.parseLong(rpcProperties.getProperty("response.timeout.millis"));
+			timeoutMillis = Long.parseLong(rpcProperties.getProperty("response.timeout.ms"));
 		} catch (Exception e) {
 			rpcResponsePort = 11111;
 		}

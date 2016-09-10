@@ -31,7 +31,12 @@ public class KafkaProperties {
 		final StringBuffer buffer = new StringBuffer();
 
 		while (envVarMatcher.find()) {
-			String envVarValue = System.getenv(envVarMatcher.group(1));
+			String envVarValue = System.getProperty(envVarMatcher.group(1));
+			
+			if (envVarValue == null) {
+				envVarValue = System.getenv(envVarMatcher.group(1));
+			}
+
 			envVarMatcher.appendReplacement(buffer, envVarValue == null ? "" : Matcher.quoteReplacement(envVarValue));
 		}
 

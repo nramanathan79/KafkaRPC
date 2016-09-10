@@ -22,7 +22,7 @@ import com.easyapp.integration.kafka.rpc.RPCService;
 import com.easyapp.integration.kafka.rpc.StringRPC;
 
 @RestController
-public class KafkaRPCRestController<T> {
+public class KafkaRPCRestController {
 	@Autowired
 	private RPCService rpcService;
 

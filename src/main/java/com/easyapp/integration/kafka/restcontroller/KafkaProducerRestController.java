@@ -20,7 +20,7 @@ import com.easyapp.integration.kafka.bean.MessageMetadata;
 import com.easyapp.integration.kafka.producer.StringProducer;
 
 @RestController
-public class KafkaProducerRestController<T> {
+public class KafkaProducerRestController {
 	public static final String SEND_SYNC = "sync";
 	public static final String SEND_ASYNC = "async";
 

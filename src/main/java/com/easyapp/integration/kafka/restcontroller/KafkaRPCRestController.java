@@ -31,13 +31,14 @@ public class KafkaRPCRestController<T> {
 
 	@RequestMapping(value = "/api/kafkaRPCDirect/{topic}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> callRPCDirect(@PathVariable("topic") final String topic,
+			@RequestParam(value = "key", required = false) final String key,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
 			@RequestBody @Valid String requestMessage) {
 		try {
 			Optional<String> responseMessage = rpc.rpcCall(
-					RPCMessageMetadata.getDirectRPCMessageMetadata(UUID.randomUUID().toString(), topic,
+					RPCMessageMetadata.getDirectRPCMessageMetadata(key == null ? UUID.randomUUID().toString() : key, topic,
 							rpcService.getResponseHost(), rpcService.getRPCResponsePort()),
-					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
+					requestMessage, timeoutMillis == null ? rpcService.getTimeoutMillis() : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
 		} catch (NoSuchElementException e) {
@@ -49,13 +50,14 @@ public class KafkaRPCRestController<T> {
 	@RequestMapping(value = "/api/kafkaRPCScatterGather/{topic}/{numberOfConsumers}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> callRPCScatterGather(@PathVariable("topic") final String topic,
 			@PathVariable("numberOfConsumers") final int numberOfConsumers,
+			@RequestParam(value = "key", required = false) final String key,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
 			@RequestBody @Valid String requestMessage) {
 		try {
 			Optional<String> responseMessage = rpc.rpcCall(
-					RPCMessageMetadata.getScatterGatherRPCMessageMetadata(UUID.randomUUID().toString(), topic,
+					RPCMessageMetadata.getScatterGatherRPCMessageMetadata(key == null ? UUID.randomUUID().toString() : key, topic,
 							rpcService.getResponseHost(), rpcService.getRPCResponsePort(), numberOfConsumers),
-					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
+					requestMessage, timeoutMillis == null ? rpcService.getTimeoutMillis() : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
 		} catch (NoSuchElementException e) {
@@ -66,13 +68,14 @@ public class KafkaRPCRestController<T> {
 
 	@RequestMapping(value = "/api/kafkaRPCStaged/{topic}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> callRPCStaged(@PathVariable("topic") final String topic,
+			@RequestParam(value = "key", required = false) final String key,
 			@RequestParam(value = "timeoutMillis", required = false) final Long timeoutMillis,
 			@RequestBody @Valid String requestMessage) {
 		try {
 			Optional<String> responseMessage = rpc.rpcCall(
-					RPCMessageMetadata.getStagedRPCMessageMetadata(UUID.randomUUID().toString(), topic,
+					RPCMessageMetadata.getStagedRPCMessageMetadata(key == null ? UUID.randomUUID().toString() : key, topic,
 							rpcService.getResponseHost(), rpcService.getRPCResponsePort()),
-					requestMessage, timeoutMillis == null ? 10000 : timeoutMillis);
+					requestMessage, timeoutMillis == null ? rpcService.getTimeoutMillis() : timeoutMillis);
 
 			return new ResponseEntity<>(responseMessage.get(), HttpStatus.OK);
 		} catch (NoSuchElementException e) {

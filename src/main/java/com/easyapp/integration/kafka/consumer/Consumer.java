@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,23 +16,22 @@ import org.apache.kafka.common.TopicPartition;
 
 import com.easyapp.integration.kafka.util.KafkaProperties;
 
-public class Consumer<K, V> {
+public class Consumer<K, V> implements Callable<Long> {
 	private final Properties consumerProperties;
+	private final String topic;
 	private final long pollingIntervalMillis;
-	
-	public static final long DEFAULT_POLLING_INTERVAL_MILLIS = 100L;
+	private final Class<? extends MessageProcessor<String, String>> messageProcessorClass; 
 
-	public Consumer() {
-		this(KafkaProperties.getKafkaConsumerProperties(), DEFAULT_POLLING_INTERVAL_MILLIS);
+	public Consumer(final String topic) throws ClassNotFoundException {
+		this(KafkaProperties.getKafkaConsumerProperties(), topic);
 	}
 	
-	public Consumer(final long pollingIntervalMillis) {
-		this(KafkaProperties.getKafkaConsumerProperties(), pollingIntervalMillis);
-	}
-	
-	public Consumer(final Properties consumerProperties, final long pollingIntervalMillis) {
+	@SuppressWarnings("unchecked")
+	public Consumer(final Properties consumerProperties, final String topic) throws ClassNotFoundException {
 		this.consumerProperties = consumerProperties;
-		this.pollingIntervalMillis = pollingIntervalMillis;
+		this.topic = topic;
+		this.pollingIntervalMillis = Long.parseLong(consumerProperties.getProperty("polling.interval.ms"));
+		this.messageProcessorClass = (Class<? extends MessageProcessor<String, String>>) Class.forName(consumerProperties.getProperty("message.processor.class"));
 	}
 
 	public Properties getConsumerProperties(final int partition) {
@@ -50,8 +50,8 @@ public class Consumer<K, V> {
 		return partitionConsumerProperties;
 	}
 
-	public long consume(final String topic,
-			final Class<? extends MessageProcessor<String, String>> messageProcessorClass) {
+	@Override
+	public Long call() throws Exception {
 		// Return the future threads for consumers to wait on.
 		List<Long> recordsProcessed = new ArrayList<>();
 
@@ -69,10 +69,9 @@ public class Consumer<K, V> {
 
 			partitions.forEach(partition -> {
 				try {
-					threads.add(
-							executor.submit(messageProcessorClass.getDeclaredConstructor(constructorParameterClasses)
-									.newInstance(getConsumerProperties(partition.partition()),
-											new TopicPartition(topic, partition.partition()), pollingIntervalMillis)));
+					threads.add(executor.submit(messageProcessorClass
+							.getDeclaredConstructor(constructorParameterClasses).newInstance(getConsumerProperties(partition.partition()),
+									new TopicPartition(topic, partition.partition()), pollingIntervalMillis)));
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 						| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					e.printStackTrace();

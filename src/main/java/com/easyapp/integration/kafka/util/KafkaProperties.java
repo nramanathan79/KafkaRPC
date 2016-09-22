@@ -32,6 +32,11 @@ public class KafkaProperties {
 
 		while (envVarMatcher.find()) {
 			String envVarValue = System.getProperty(envVarMatcher.group(1));
+			
+			if (envVarValue == null) {
+				envVarValue = System.getenv(envVarMatcher.group(1));
+			}
+
 			envVarMatcher.appendReplacement(buffer, envVarValue == null ? "" : Matcher.quoteReplacement(envVarValue));
 		}
 
@@ -41,7 +46,7 @@ public class KafkaProperties {
 	}
 
 	private static Properties getKafkaProperties(final String fileName) throws KafkaException {
-		final Properties properties = new Properties();
+		Properties properties = new Properties();
 		InputStream input = null;
 
 		try {
@@ -61,8 +66,8 @@ public class KafkaProperties {
 				}
 			}
 		}
-		
-		final Properties expandedEnvProperties = new Properties();
+
+		Properties expandedEnvProperties = new Properties();
 
 		properties.forEach((key, value) -> {
 			expandedEnvProperties.put(key, resolveValueWithEnvVars(String.valueOf(value)));

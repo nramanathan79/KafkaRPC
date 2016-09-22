@@ -39,7 +39,7 @@ public abstract class BaseMetadata {
 		}
 	}
 
-	public static <T extends BaseMetadata> Optional<T> fromJSON(String jsonString, Class<T> keyClass) {
+	public static <T extends BaseMetadata> Optional<T> fromJSON(final String jsonString, final Class<T> keyClass) {
 		try {
 			return Optional.of(jsonMapper.readValue(jsonString, keyClass));
 		} catch (IOException e) {

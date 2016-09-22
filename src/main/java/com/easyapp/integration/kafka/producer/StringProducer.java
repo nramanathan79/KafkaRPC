@@ -5,8 +5,6 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import javax.annotation.PreDestroy;
-
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -19,10 +17,10 @@ import com.easyapp.integration.kafka.util.KafkaProperties;
 
 @Component
 public class StringProducer {
-	private final Producer<String, String> producer;
+	private Producer<String, String> producer;
 
 	public StringProducer() {
-		producer = new KafkaProducer<>(KafkaProperties.getKafkaProducerProperties());
+		this(KafkaProperties.getKafkaProducerProperties());
 	}
 
 	public StringProducer(final Properties producerProperties) {
@@ -54,7 +52,6 @@ public class StringProducer {
 				callback);
 	}
 
-	@PreDestroy
 	public void close() {
 		producer.close();
 	}

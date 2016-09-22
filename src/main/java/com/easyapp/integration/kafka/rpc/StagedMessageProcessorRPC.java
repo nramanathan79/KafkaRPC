@@ -16,8 +16,8 @@ public class StagedMessageProcessorRPC extends MessageProcessorRPC {
 	private static final Map<String, List<String>> messageMap = new ConcurrentHashMap<>();
 	private final int numberOfConsumers;
 
-	public StagedMessageProcessorRPC(final Properties consumerProperties, final TopicPartition topicPartition,
-			final long pollingIntervalMillis) {
+	public StagedMessageProcessorRPC(Properties consumerProperties, TopicPartition topicPartition,
+			long pollingIntervalMillis) {
 		super(consumerProperties, topicPartition, pollingIntervalMillis);
 		numberOfConsumers = Integer.parseInt(String.valueOf(consumerProperties.get("number.of.consumers")));
 	}

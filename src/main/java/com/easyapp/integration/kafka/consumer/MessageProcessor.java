@@ -14,11 +14,10 @@ public abstract class MessageProcessor<K, V> implements Callable<Long> {
 	private final TopicPartition topicPartition;
 	private final long pollingIntervalMillis;
 
-	public MessageProcessor(final Properties consumerProperties, final TopicPartition topicPartition,
-			final long pollingIntervalMillis) {
+	public MessageProcessor(final Properties consumerProperties, final TopicPartition topicPartition) {
 		this.consumer = new KafkaConsumer<>(consumerProperties);
 		this.topicPartition = topicPartition;
-		this.pollingIntervalMillis = pollingIntervalMillis;
+		this.pollingIntervalMillis = Long.parseLong(consumerProperties.getProperty("polling.interval.ms"));
 	}
 
 	abstract protected V process(final ConsumerRecord<K, V> record);

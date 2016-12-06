@@ -16,9 +16,8 @@ import com.easyapp.integration.kafka.producer.StringProducer;
 public abstract class MessageProcessorRPC extends MessageProcessor<String, String> {
 	private final StringProducer producer;
 
-	public MessageProcessorRPC(final Properties consumerProperties, final TopicPartition topicPartition,
-			final long pollingIntervalMillis) {
-		super(consumerProperties, topicPartition, pollingIntervalMillis);
+	public MessageProcessorRPC(final Properties consumerProperties, final TopicPartition topicPartition) {
+		super(consumerProperties, topicPartition);
 
 		Properties producerProperties = new Properties();
 		producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,

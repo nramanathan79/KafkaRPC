@@ -1,4 +1,4 @@
-FROM alpine-java:8
+FROM java:alpine
 
 # Defaulting common environment variables
 ENV KAFKA_SESSION_TIMEOUT_MILLIS 30000

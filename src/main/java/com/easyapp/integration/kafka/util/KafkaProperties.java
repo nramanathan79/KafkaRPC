@@ -173,4 +173,8 @@ public class KafkaProperties {
 	public static Properties getKafkaRPCProperties() throws KafkaException {
 		return getValidatedProducerProperties(getKafkaProperties("kafka.rpc.properties"));
 	}
+
+	public static Properties getKafkaSparkStreamProperties() throws KafkaException {
+		return getValidatedConsumerProperties(getKafkaProperties("kafka.sparkstream.properties"));
+	}
 }

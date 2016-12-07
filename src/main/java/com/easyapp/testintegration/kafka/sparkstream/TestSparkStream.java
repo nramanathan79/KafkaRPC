@@ -19,7 +19,7 @@ public class TestSparkStream {
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 
 			try {
-				final Properties consumerProperties = KafkaProperties.getKafkaConsumerProperties();
+				final Properties consumerProperties = KafkaProperties.getKafkaSparkStreamProperties();
 				consumerProperties.put("stream.message.processor.class",
 						"com.easyapp.testintegration.kafka.sparkstream.TestStreamMessageProcessor");
 

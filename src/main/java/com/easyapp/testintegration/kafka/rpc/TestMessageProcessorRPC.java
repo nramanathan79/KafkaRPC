@@ -9,9 +9,8 @@ import com.easyapp.integration.kafka.rpc.MessageProcessorRPC;
 
 public class TestMessageProcessorRPC extends MessageProcessorRPC {
 
-	public TestMessageProcessorRPC(final Properties consumerProperties, final TopicPartition topicPartition,
-			final long pollingIntervalMillis) {
-		super(consumerProperties, topicPartition, pollingIntervalMillis);
+	public TestMessageProcessorRPC(final Properties consumerProperties, final TopicPartition topicPartition) {
+		super(consumerProperties, topicPartition);
 	}
 
 	@Override

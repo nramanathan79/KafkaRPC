@@ -9,9 +9,8 @@ import com.easyapp.integration.kafka.consumer.MessageProcessor;
 
 public class TestMessageProcessor extends MessageProcessor<String, String> {
 
-	public TestMessageProcessor(final Properties consumerProperties, final TopicPartition topicPartition,
-			long pollingIntervalMillis) {
-		super(consumerProperties, topicPartition, pollingIntervalMillis);
+	public TestMessageProcessor(final Properties consumerProperties, final TopicPartition topicPartition) {
+		super(consumerProperties, topicPartition);
 	}
 
 	@Override

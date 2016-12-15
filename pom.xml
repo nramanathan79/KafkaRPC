@@ -96,8 +96,6 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>BOOT-INF/classes/</classpathPrefix>
-							<classpathLayoutType>custom</classpathLayoutType>
-							<customClasspathLayout>BOOT-INF/lib/$${artifact.artifactId}-$${artifact.version}$${dashClassifier?}.$${artifact.extension}</customClasspathLayout>
 						</manifest>
 					</archive>
 				</configuration>

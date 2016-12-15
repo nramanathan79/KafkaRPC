@@ -113,6 +113,7 @@ public class SparkStream<K, V> implements Callable<Void>, Serializable {
 
 			@Override
 			public Tuple2<K, V> call(ConsumerRecord<K, V> record) throws Exception {
+System.out.println("RAMBO JUNK: KEY = " + record.key() + " VALUE = " + record.value());
 				return new Tuple2<>(record.key(), record.value());
 			}
 		}).foreachRDD(rdd -> rdd.collect().stream().forEach(record -> streamMessageProcessor.process(record)));

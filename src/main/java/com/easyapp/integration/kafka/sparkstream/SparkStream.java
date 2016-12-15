@@ -68,6 +68,7 @@ public class SparkStream<K, V> implements Callable<Void>, Serializable {
 		this.sparkAppName = sparkStreamProperties.getProperty("spark.app.name");
 
 		final String sparkJars = sparkStreamProperties.getProperty("spark.driver.jars");
+System.out.println("RAMBO: Jars = " + sparkJars);
 		if (sparkJars != null && !sparkJars.contains("spark.driver.jars")) {
 			this.sparkDriverJars = sparkJars.trim().split(",");
 		} else {
@@ -75,6 +76,7 @@ public class SparkStream<K, V> implements Callable<Void>, Serializable {
 		}
 
 		final String sparkJavaOptions = sparkStreamProperties.getProperty("spark.driver.java.options");
+System.out.println("RAMBO: Java Options = " + sparkJavaOptions);
 		if (sparkJavaOptions != null && !sparkJavaOptions.contains("spark.driver.java.options")) {
 			final String[] javaOptions = sparkJavaOptions.trim().split(" ");
 			for (String javaOption : javaOptions) {

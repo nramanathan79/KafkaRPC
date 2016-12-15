@@ -68,14 +68,14 @@ public class SparkStream<K, V> implements Callable<Void>, Serializable {
 		this.sparkAppName = sparkStreamProperties.getProperty("spark.app.name");
 
 		final String sparkJars = sparkStreamProperties.getProperty("spark.driver.jars");
-		if (sparkJars != null) {
+		if (sparkJars != null && !sparkJars.contains("spark.driver.jars")) {
 			this.sparkDriverJars = sparkJars.trim().split(",");
 		} else {
 			this.sparkDriverJars = null;
 		}
 
 		final String sparkJavaOptions = sparkStreamProperties.getProperty("spark.driver.java.options");
-		if (sparkJavaOptions != null) {
+		if (sparkJavaOptions != null && !sparkJavaOptions.contains("spark.driver.java.options")) {
 			final String[] javaOptions = sparkJavaOptions.trim().split(" ");
 			for (String javaOption : javaOptions) {
 				if (javaOption.startsWith("-D")) {

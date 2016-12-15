@@ -83,6 +83,7 @@ public class SparkStream<K, V> implements Callable<Void>, Serializable {
 				}
 
 				final String[] option = javaOption.split("=");
+System.out.println("RAMBO JUNK: Property = " + option[0] + " Value = " + option[1]);
 				this.sparkDriverJavaOptions.add(new Tuple2<>(option[0], option[1]));
 			}
 		}

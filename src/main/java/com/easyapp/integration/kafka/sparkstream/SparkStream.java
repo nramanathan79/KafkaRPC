@@ -123,6 +123,8 @@ public class SparkStream<K, V> implements Callable<Void>, Serializable {
 			streamingContext.awaitTermination();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} finally {
+			streamingContext.stop();
 		}
 
 		return null;
